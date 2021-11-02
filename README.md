@@ -18,3 +18,5 @@ $ npm run generate
 ```
 
 For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+
+11/2 20.5~21.5 1h+1h

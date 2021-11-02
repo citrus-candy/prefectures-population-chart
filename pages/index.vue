@@ -1,65 +1,68 @@
 <template>
-  <div class="container">
-    <div>
-      <Logo />
-      <h1 class="title">resas-graph-spa</h1>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
+  <div class="chart-container">
+    <ChartLine
+      :chart-data="chartData"
+      :chart-options="chartOption"
+      :styles="chartStyles"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { Component, Vue } from 'nuxt-property-decorator'
+import { ChartData, ChartOptions } from 'chart.js'
+import ChartLine from '@/components/Chart.vue'
 
-export default Vue.extend({})
+@Component({
+  components: {
+    ChartLine
+  }
+})
+export default class ChartPage extends Vue {
+  chartData: ChartData = {
+    // 横軸のラベル
+    labels: ['A', 'B', 'C', 'D', 'E'],
+    // データのリスト
+    datasets: [
+      {
+        label: 'Data One', // データのラベル
+        data: [1, 5, 3, 4, 3] // データの値。labelsと同じサイズ
+      },
+      {
+        label: 'Data Two',
+        data: [10, 50, 30, 40, 30]
+      }
+    ]
+  }
+
+  // チャートのオプション
+  chartOption: ChartOptions = {
+    // アスペクト比を固定しないように変更
+    maintainAspectRatio: false
+  }
+
+  // チャートのスタイル: <canvas>のstyle属性として設定
+  chartStyles = {
+    height: '100%',
+    width: '100%'
+  }
+}
 </script>
 
 <style>
-.container {
+.chart-container {
+  /**
+   * vue-chartjsで生成する<canvas>がabsoluteのため、
+   * relateveを設定
+   */
+  position: relative;
+
+  /**
+   * chartStylesを設定しているので、
+   * height/wightが有効になる
+   */
+  height: 40vh;
+  width: 80vw;
   margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
 }
 </style>
