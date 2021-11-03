@@ -34,5 +34,6 @@ html {
 
 body {
   margin: 0;
+  user-select: none;
 }
 </style>
