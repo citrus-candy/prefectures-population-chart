@@ -1,20 +1,25 @@
 <template>
-  <div class="chart-container">
-    <ChartLine
-      :chart-data="chartData"
-      :chart-options="chartOption"
-      :styles="chartStyles"
-    />
+  <div class="container">
+    <checkboxes />
+    <div class="chart-container">
+      <chart-line
+        :chart-data="chartData"
+        :chart-options="chartOption"
+        :styles="chartStyles"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 import { ChartData, ChartOptions } from 'chart.js'
+import Checkboxes from '@/components/Checkboxes.vue'
 import ChartLine from '@/components/Chart.vue'
 
 @Component({
   components: {
+    Checkboxes,
     ChartLine
   }
 })
@@ -48,6 +53,12 @@ export default class ChartPage extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.container {
+  margin: 8px;
+}
+</style>
 
 <style>
 .chart-container {
