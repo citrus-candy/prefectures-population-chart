@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <checkboxes />
+    <checkboxes v-model="selectedPrefCodes" :prefectures="prefectures" />
     <div class="chart-container">
       <chart-line
         :chart-data="chartData"
@@ -14,6 +14,7 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 import { ChartData, ChartOptions } from 'chart.js'
+import { Context } from '@nuxt/types'
 import Checkboxes from '@/components/Checkboxes.vue'
 import ChartLine from '@/components/Chart.vue'
 
@@ -21,9 +22,25 @@ import ChartLine from '@/components/Chart.vue'
   components: {
     Checkboxes,
     ChartLine
+  },
+  async asyncData(context: Context) {
+    const prefectures = await context.$axios.get(
+      `${context.$config.baseUrl}api/v1/prefectures`,
+      {
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'X-API-Key': context.$config.apiKey
+        }
+      }
+    )
+    return {
+      prefectures: prefectures.data.result
+    }
   }
 })
 export default class ChartPage extends Vue {
+  selectedPrefCodes: number[] = []
+
   chartData: ChartData = {
     // 横軸のラベル
     labels: ['A', 'B', 'C', 'D', 'E'],

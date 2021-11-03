@@ -4,91 +4,36 @@
       {{ title }}
     </div>
     <div class="checkboxes">
-      <label v-for="prefecture in prefectures" :key="prefecture.id">
-        <input type="checkbox" name="prefecture" :value="prefecture.id" />
-        {{ prefecture.name }}
+      <label v-for="prefecture in prefectures" :key="prefecture.prefCode">
+        <input
+          :id="prefecture.prefCode"
+          v-model="selectedPrefCodes"
+          type="checkbox"
+          :value="prefecture.prefCode"
+        />
+        {{ prefecture.prefName }}
       </label>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, VModel } from 'nuxt-property-decorator'
 
 interface Prefectures {
-  id: number
-  name: string
+  prefCode: number
+  prefName: string
 }
 
 @Component
 export default class Checkboxes extends Vue {
+  @Prop({ type: Array, required: true })
+  prefectures!: Prefectures
+
+  @VModel({ type: Array, required: true })
+  selectedPrefCodes!: number[]
+
   title: string = '都道府県'
-  prefectures: Prefectures[] = [
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    },
-    {
-      id: 0,
-      name: '北海道'
-    },
-    {
-      id: 1,
-      name: '岩手県'
-    }
-  ]
 }
 </script>
 
