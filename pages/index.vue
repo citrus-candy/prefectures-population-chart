@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <checkboxes v-model="selectedPrefCodes" :prefectures="prefectures" />
-    <div class="chart-container">
+    <div v-show="showChart" class="chart-container">
       <chart-line
         :chart-data="chartData"
         :chart-options="chartOption"
@@ -12,11 +12,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import { ChartData, ChartOptions } from 'chart.js'
 import { Context } from '@nuxt/types'
 import Checkboxes from '@/components/Checkboxes.vue'
 import ChartLine from '@/components/Chart.vue'
+
+interface Compositions {
+  year: number
+  value: number
+}
 
 @Component({
   components: {
@@ -41,25 +46,16 @@ import ChartLine from '@/components/Chart.vue'
 export default class ChartPage extends Vue {
   selectedPrefCodes: number[] = []
 
+  showChart: boolean = false
+  chartDataLabels: number[] = []
+  chartDataValues: number[] = []
   chartData: ChartData = {
-    // 横軸のラベル
-    labels: ['A', 'B', 'C', 'D', 'E'],
-    // データのリスト
-    datasets: [
-      {
-        label: 'Data One', // データのラベル
-        data: [1, 5, 3, 4, 3] // データの値。labelsと同じサイズ
-      },
-      {
-        label: 'Data Two',
-        data: [10, 50, 30, 40, 30]
-      }
-    ]
+    labels: this.chartDataLabels,
+    datasets: []
   }
 
   // チャートのオプション
   chartOption: ChartOptions = {
-    // アスペクト比を固定しないように変更
     maintainAspectRatio: false
   }
 
@@ -67,6 +63,65 @@ export default class ChartPage extends Vue {
   chartStyles = {
     height: '100%',
     width: '100%'
+  }
+
+  async getPopulation(selectedPrefCode: number): Promise<Compositions[]> {
+    const response = await this.$axios.get(
+      `${this.$config.baseUrl}api/v1/population/composition/perYear`,
+      {
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'X-API-KEY': this.$config.apiKey
+        },
+        params: {
+          prefCode: selectedPrefCode,
+          cityCode: '-'
+        }
+      }
+    )
+    return response.data.result.data[0].data
+  }
+
+  updateChartData(compositions: Compositions[]) {
+    this.chartDataValues = []
+    this.chartDataLabels = []
+
+    compositions.forEach((composition: Compositions) => {
+      this.chartDataValues.push(composition.value)
+      this.chartDataLabels.push(composition.year)
+    })
+
+    this.chartData = {
+      labels: this.chartDataLabels,
+      datasets: [
+        {
+          label: 'Data One',
+          data: this.chartDataValues,
+          borderColor: 'red',
+          lineTension: 0,
+          fill: false
+        }
+      ]
+    }
+  }
+
+  @Watch('selectedPrefCodes')
+  onChangeSelectedPrefCodes(newValue: number[]) {
+    this.showChart = true
+    if (newValue.length !== 0) {
+      newValue.forEach((selectedPrefCode: number) => {
+        this.getPopulation(selectedPrefCode).then(
+          (compositions: Compositions[]) => {
+            this.updateChartData(compositions)
+          }
+        )
+      })
+    } else {
+      this.chartData = {
+        labels: this.chartDataLabels,
+        datasets: []
+      }
+    }
   }
 }
 </script>
