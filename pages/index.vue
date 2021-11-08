@@ -48,15 +48,23 @@ export default class ChartPage extends Vue {
 
   showChart: boolean = false
   chartDataLabels: number[] = []
-  chartDataValues: number[] = []
+  chartDataSets: any[] = []
+
   chartData: ChartData = {
     labels: this.chartDataLabels,
-    datasets: []
+    datasets: this.chartDataSets
   }
 
   // チャートのオプション
   chartOption: ChartOptions = {
-    maintainAspectRatio: false
+    maintainAspectRatio: false,
+    animation: {
+      duration: 0
+    },
+    hover: {
+      animationDuration: 0
+    },
+    responsiveAnimationDuration: 0
   }
 
   // チャートのスタイル: <canvas>のstyle属性として設定
@@ -82,45 +90,54 @@ export default class ChartPage extends Vue {
     return response.data.result.data[0].data
   }
 
-  updateChartData(compositions: Compositions[]) {
-    this.chartDataValues = []
-    this.chartDataLabels = []
-
+  updateChartLabels(compositions: Compositions[]) {
+    this.chartDataLabels.length = 0
     compositions.forEach((composition: Compositions) => {
-      this.chartDataValues.push(composition.value)
       this.chartDataLabels.push(composition.year)
     })
+  }
 
-    this.chartData = {
-      labels: this.chartDataLabels,
-      datasets: [
-        {
-          label: 'Data One',
-          data: this.chartDataValues,
-          borderColor: 'red',
-          lineTension: 0,
-          fill: false
-        }
-      ]
-    }
+  updateChartData(compositions: Compositions[]) {
+    const chartDataValues: number[] = []
+
+    compositions.forEach((composition: Compositions) => {
+      chartDataValues.push(composition.value)
+    })
+
+    this.chartDataSets?.push({
+      label: 'Data One',
+      data: chartDataValues,
+      borderColor: 'red',
+      lineTension: 0,
+      fill: false
+    })
+  }
+
+  @Watch('chartDataLabels')
+  onChangeChartDataLabels(chartDataLabels: number[]) {
+    if (chartDataLabels !== []) this.showChart = true
   }
 
   @Watch('selectedPrefCodes')
-  onChangeSelectedPrefCodes(newValue: number[]) {
-    this.showChart = true
-    if (newValue.length !== 0) {
-      newValue.forEach((selectedPrefCode: number) => {
-        this.getPopulation(selectedPrefCode).then(
-          (compositions: Compositions[]) => {
-            this.updateChartData(compositions)
-          }
+  onChangeSelectedPrefCodes(selectedPrefCodes: number[]) {
+    if (!this.showChart) {
+      this.getPopulation(1).then((compositions: Compositions[]) =>
+        this.updateChartLabels(compositions)
+      )
+    }
+    if (selectedPrefCodes.length !== 0) {
+      this.chartDataSets.length = 0
+      selectedPrefCodes.forEach(async (selectedPrefCode: number) => {
+        await this.getPopulation(selectedPrefCode).then(
+          (compositions: Compositions[]) => this.updateChartData(compositions)
         )
+        this.chartData = {
+          labels: this.chartDataLabels,
+          datasets: this.chartDataSets
+        }
       })
     } else {
-      this.chartData = {
-        labels: this.chartDataLabels,
-        datasets: []
-      }
+      this.showChart = false
     }
   }
 }
