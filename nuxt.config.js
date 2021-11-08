@@ -45,11 +45,6 @@ export default {
 
   publicRuntimeConfig: {
     baseUrl: process.env.BASE_URL,
-    apiKey:
-      process.env.NODE_ENV !== 'production' ? process.env.API_KEY : undefined
-  },
-
-  privateRuntimeConfig: {
     apiKey: process.env.API_KEY
   }
 }
