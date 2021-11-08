@@ -58,6 +58,7 @@ export default class ChartPage extends Vue {
   // チャートのオプション
   chartOption: ChartOptions = {
     maintainAspectRatio: false,
+    legend: { position: 'bottom' },
     animation: {
       duration: 0
     },
