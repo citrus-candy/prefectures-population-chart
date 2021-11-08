@@ -22,6 +22,10 @@ interface Compositions {
   year: number
   value: number
 }
+interface Prefectures {
+  prefCode: number
+  prefName: string
+}
 
 @Component({
   components: {
@@ -49,6 +53,7 @@ export default class ChartPage extends Vue {
   showChart: boolean = false
   chartDataLabels: number[] = []
   chartDataSets: any[] = []
+  prefectures?: Prefectures[]
 
   chartData: ChartData = {
     labels: this.chartDataLabels,
@@ -95,20 +100,21 @@ export default class ChartPage extends Vue {
     })
   }
 
-  updateChartData(compositions: Compositions[]) {
+  updateChartData(compositions: Compositions[], prefCode: number) {
     const chartDataValues: number[] = []
 
     compositions.forEach((composition: Compositions) => {
       chartDataValues.push(composition.value)
     })
 
-    this.chartDataSets?.push({
-      label: 'Data One',
-      data: chartDataValues,
-      borderColor: this.randomColorHex(),
-      lineTension: 0,
-      fill: false
-    })
+    if (this.prefectures !== undefined)
+      this.chartDataSets?.push({
+        label: this.prefectures[prefCode - 1].prefName,
+        data: chartDataValues,
+        borderColor: this.randomColorHex(),
+        lineTension: 0,
+        fill: false
+      })
   }
 
   randomColorHex(): string {
@@ -137,7 +143,8 @@ export default class ChartPage extends Vue {
       this.chartDataSets.length = 0
       selectedPrefCodes.forEach(async (selectedPrefCode: number) => {
         await this.getPopulation(selectedPrefCode).then(
-          (compositions: Compositions[]) => this.updateChartData(compositions)
+          (compositions: Compositions[]) =>
+            this.updateChartData(compositions, selectedPrefCode)
         )
         this.chartData = {
           labels: this.chartDataLabels,
