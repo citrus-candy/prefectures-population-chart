@@ -17,15 +17,7 @@ import { ChartData, ChartOptions } from 'chart.js'
 import { Context } from '@nuxt/types'
 import Checkboxes from '@/components/Checkboxes.vue'
 import ChartLine from '@/components/Chart.vue'
-
-interface Compositions {
-  year: number
-  value: number
-}
-interface Prefectures {
-  prefCode: number
-  prefName: string
-}
+import { Compositions, Prefectures } from '@/types/interface.d'
 
 @Component({
   components: {

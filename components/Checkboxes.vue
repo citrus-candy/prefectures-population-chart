@@ -19,11 +19,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, VModel } from 'nuxt-property-decorator'
-
-interface Prefectures {
-  prefCode: number
-  prefName: string
-}
+import { Prefectures } from '@/types/interface.d'
 
 @Component
 export default class Checkboxes extends Vue {
