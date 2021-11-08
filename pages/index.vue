@@ -105,10 +105,20 @@ export default class ChartPage extends Vue {
     this.chartDataSets?.push({
       label: 'Data One',
       data: chartDataValues,
-      borderColor: 'red',
+      borderColor: this.randomColorHex(),
       lineTension: 0,
       fill: false
     })
+  }
+
+  randomColorHex(): string {
+    let color = Math.ceil(16777215 * Math.random()).toString(16)
+    let length = color.length
+    while (length < 6) {
+      color = `0${color}`
+      length++
+    }
+    return `#${color}`
   }
 
   @Watch('chartDataLabels')
