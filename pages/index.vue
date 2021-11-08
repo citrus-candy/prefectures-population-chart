@@ -59,13 +59,10 @@ export default class ChartPage extends Vue {
   chartOption: ChartOptions = {
     maintainAspectRatio: false,
     legend: { position: 'bottom' },
-    animation: {
-      duration: 0
-    },
-    hover: {
-      animationDuration: 0
-    },
-    responsiveAnimationDuration: 0
+    scales: {
+      xAxes: [{ scaleLabel: { display: true, labelString: '年度' } }],
+      yAxes: [{ scaleLabel: { display: true, labelString: '人口数' } }]
+    }
   }
 
   // チャートのスタイル: <canvas>のstyle属性として設定
